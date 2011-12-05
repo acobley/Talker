@@ -1,5 +1,6 @@
 package org.r2dvd.aec;
-
+import java.net.*;
+import java.io.*;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -61,8 +62,15 @@ public class TalkActivity extends Activity  implements OnInitListener {
         Intent checkIntent = new Intent();
         checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
         startActivityForResult(checkIntent, REQ_TTS_STATUS_CHECK);
-        ols= new OloginSetup();
+        
+        TextView textView = (TextView)findViewById(R.id.textview);
+    	 WebView webview = (WebView) findViewById(R.id.webView1);
+        
+        ols= new OloginSetup(webview,textView);
         ols.execute();
+        
+        
+       
        
     }
     
@@ -124,83 +132,93 @@ public class TalkActivity extends Activity  implements OnInitListener {
     }
 
     
-    void mbsmnd(final OAuthService s, final Token requestToken, final String authURL){
-    	final TextView textView = (TextView)findViewById(R.id.textview);
-    	final  WebView webview = (WebView) findViewById(R.id.webView1);
-
-       //attach WebViewClient to intercept the callback url
-       webview.setWebViewClient(new WebViewClient(){
-       	@Override
-    	public boolean shouldOverrideUrlLoading(WebView view, String url){
-
-    		//check for our custom callback protocol
-       //otherwise use default behavior
-    		if(url.startsWith("oauth")){
-    			//authorization complete hide webview for now.
-    			webview.setVisibility(View.GONE);
-
-    			Uri uri = Uri.parse(url);
-    			String verifier = uri.getQueryParameter("oauth_verifier");
-    			Verifier v = new Verifier(verifier);
-
-    			//save this token for practical use.
-    			Token accessToken = s.getAccessToken(requestToken, v);
-
-    			//host twitter detected from callback oauth://twitter
-    			if(uri.getHost().equals("twitter")){
-    				//requesting xml because its easier
-               //for human to read as it comes back
-       			OAuthRequest req = new OAuthRequest(Verb.GET,
-                       "http://api.twitter.com/1/account/verify_credentials.xml");
-       			s.signRequest(accessToken, req);
-       			Response response = req.send();
-       			textView.setText(response.getBody());
-    			}
-
-    			return true;
-    		}
-
-    		return super.shouldOverrideUrlLoading(view, url);
-    	}
-    });
-
-    //send user to authorization page
-    webview.loadUrl(authURL);
-    }
+  
 
 
     private class OloginSetup extends AsyncTask<String, Void, Void> {
-    
+    	 WebView webview=null;
+    	 TextView textView = null;
+    	 
+    	 OloginSetup( WebView webview, TextView textView)
+    	{
+    		this.webview=webview;
+    	}
     	
     	@Override
         protected void onPreExecute() {
             Log.v("AsyncTask", "onPreExecute");
         }
 
-    	
+    	OAuthService s =null;
+    	Token requestToken=null; 
+    	String authURL =null;
         protected Void doInBackground(String... urls) {
-        	
+        	char Result[]= new char[1024];
         	Log.v(TAG, "Starting async");
         	//set up service and get request token as seen on scribe website
             //https://github.com/fernandezpablo85/scribe-java/wiki/Getting-Started
-            final OAuthService s = new ServiceBuilder()
+        	
+           s = new ServiceBuilder()
             .provider(TwitterApi.class)
             .apiKey(APIKEY)
             .apiSecret(APISECRET)
     		.callback(CALLBACK)
     		.build();
             Log.v(TAG, "got Service");
-            Token requestToken=null; 
+            
             try {
             	 requestToken= s.getRequestToken();
             }catch(Exception et){
-            	Log.v(TAG, "didn't get token "+et);
+            	Log.v(TAG, "didn't get token  "+et);
             	return (null);
             }
     		Log.v(TAG, "got token");
-    		final String authURL = s.getAuthorizationUrl(requestToken);
+    		authURL = s.getAuthorizationUrl(requestToken);
     		Log.v(TAG, "got authurl" + authURL);
 
+    		
+    		//attach WebViewClient to intercept the callback url
+    	       webview.setWebViewClient(new WebViewClient(){
+    	       	@Override
+    	    	public boolean shouldOverrideUrlLoading(WebView view, String url){
+
+    	    		//check for our custom callback protocol
+    	       //otherwise use default behavior
+    	    		if(url.startsWith("oauth")){
+    	    			//authorization complete hide webview for now.
+    	    			webview.setVisibility(View.GONE);
+
+    	    			Uri uri = Uri.parse(url);
+    	    			String verifier = uri.getQueryParameter("oauth_verifier");
+    	    			Verifier v = new Verifier(verifier);
+
+    	    			//save this token for practical use.
+    	    			Token accessToken = s.getAccessToken(requestToken, v);
+
+    	    			//host twitter detected from callback oauth://twitter
+    	    			if(uri.getHost().equals("twitter")){
+    	    				//requesting xml because its easier
+    	               //for human to read as it comes back
+    	       			OAuthRequest req = new OAuthRequest(Verb.GET,
+    	                       "http://api.twitter.com/1/account/verify_credentials.xml");
+    	       			s.signRequest(accessToken, req);
+    	       			Response response = req.send();
+    	       			textView.setText(response.getBody());
+    	    			}
+
+    	    			return true;
+    	    		}
+
+    	    		return super.shouldOverrideUrlLoading(view, url);
+    	    	}
+    	    });
+
+    	    //send user to authorization page
+    	    webview.loadUrl(authURL);
+    		
+    		
+    		
+    		
             return null ;
         }
 
