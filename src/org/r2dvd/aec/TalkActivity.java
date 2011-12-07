@@ -262,6 +262,7 @@ public class TalkActivity extends Activity  implements OnInitListener {
     			s.signRequest(accessToken, req);
     			Response response = req.send();
     			XMLParser xmlparse=new XMLParser();
+    			AuthorStore aus=xmlparse.GetDetails(response);
     			return response;
  			}
  			return null;

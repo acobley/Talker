@@ -14,7 +14,7 @@ import org.scribe.builder.api.*;
 import org.scribe.model.*;
 import org.scribe.oauth.*;
 
-public class XMLParser {
+public class XMLParser extends DefaultHandler{
 	 private HashMap ElementsMap = new HashMap();
 	  private int CurrentState=-1;
 	  AuthorStore au;
@@ -22,6 +22,7 @@ public class XMLParser {
 	public XMLParser(){
 		 ElementsMap.put("name", 0);
 		 ElementsMap.put("screen_name", 1);
+		 ElementsMap.put("id", 2);
 		 au = new AuthorStore();
 
 	}
@@ -134,6 +135,11 @@ throws SAXException
 	        			System.out.println("Set"+au.getemailName());
 	        			CurrentState=-1; //We've processed that now
 	        			break;
+	        	case 2:	if (!s.trim().equals(""))
+        			System.out.println("id" +s);
+    			
+    			CurrentState=-1; //We've processed that now
+    			break;		
 	        	default:break;
 	        }
 	    }	 
