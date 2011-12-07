@@ -136,8 +136,15 @@ throws SAXException
 	        			CurrentState=-1; //We've processed that now
 	        			break;
 	        	case 2:	if (!s.trim().equals(""))
-        			System.out.println("id" +s);
-    			
+	        		try {
+	        			long UserId=Long.parseLong(s);
+	        			System.out.println("user id "+UserId);
+	        			au.setUserId(UserId);
+	        		}catch(Exception et){
+	        			System.out.println("USer id not a log)");
+	        		}
+        			System.out.println("id " +s);
+        			System.out.println("Set"+au.getUserId());
     			CurrentState=-1; //We've processed that now
     			break;		
 	        	default:break;

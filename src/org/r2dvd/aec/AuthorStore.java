@@ -10,7 +10,7 @@ public class AuthorStore {
 	private String Tel;
 	private String GoogleName;
 	private String YahooName;
-	private long UserId;
+	private long UserId=0;
 	private long ProfilePic=-1;
 	
 	public AuthorStore(){
@@ -98,7 +98,8 @@ public class AuthorStore {
 	}
 	
 	public void setUserId(long UserId){
-		this.UserId=UserId;
+		if (this.UserId ==0)
+			this.UserId=UserId;
 	}
 	
 	public long getUserId(){

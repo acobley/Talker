@@ -219,7 +219,8 @@ public class TalkActivity extends Activity  implements OnInitListener {
     
     private class OGetResponse extends AsyncTask<String, Void, String> {
     	 Response response=null;
-
+         String Output=null;
+         AuthorStore aus=null;
     	@Override
         protected void onPreExecute() {
             Log.v("Oget Response", "onPreExecute");
@@ -232,7 +233,7 @@ public class TalkActivity extends Activity  implements OnInitListener {
             for (int i = 0; i < count; i++) {
             	Log.v(TAG, "url "+urls[i]);	
          	  response=GetResponse(urls[i]);
-         	   Log.v(TAG, "response "+response.getBody());	
+         	   //Log.v(TAG, "response "+response.getBody());	
          	   
             }
             return null;
@@ -240,8 +241,8 @@ public class TalkActivity extends Activity  implements OnInitListener {
     	 }
     	 protected void onPostExecute(String url) {
          	Log.v(TAG, "On Post Execute");   		
-         	textView.setText(response.getBody());
-         	
+         	//textView.setText(response.getBody());
+         	textView.setText("User "+aus.getname()+" ID "+aus.getUserId());
              
          }
     	 
@@ -262,7 +263,8 @@ public class TalkActivity extends Activity  implements OnInitListener {
     			s.signRequest(accessToken, req);
     			Response response = req.send();
     			XMLParser xmlparse=new XMLParser();
-    			AuthorStore aus=xmlparse.GetDetails(response);
+    			aus=xmlparse.GetDetails(response);
+    			
     			return response;
  			}
  			return null;
