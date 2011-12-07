@@ -1,5 +1,7 @@
 package org.r2dvd.aec;
 import java.net.*;
+import javax.xml.parsers.*;
+
 import java.io.*;
 
 import java.lang.reflect.Method;
@@ -259,6 +261,7 @@ public class TalkActivity extends Activity  implements OnInitListener {
                     "http://api.twitter.com/1/account/verify_credentials.xml");
     			s.signRequest(accessToken, req);
     			Response response = req.send();
+    			XMLParser xmlparse=new XMLParser();
     			return response;
  			}
  			return null;
