@@ -34,6 +34,10 @@ import org.scribe.model.Verb;
 import org.scribe.model.Verifier;
 import org.scribe.oauth.OAuthService;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 public class TalkActivity extends Activity  implements OnInitListener {
     /** Called when the activity is first created. */
 	private static final int REQ_TTS_STATUS_CHECK = 0;
@@ -286,6 +290,7 @@ public class TalkActivity extends Activity  implements OnInitListener {
     private class OGetStatus extends AsyncTask<String, Void, String> {
    	 Response response=null;
    	 String body=null;
+   	 String output=null;
 
    	@Override
        protected void onPreExecute() {
@@ -308,7 +313,7 @@ public class TalkActivity extends Activity  implements OnInitListener {
    	 protected void onPostExecute(String url) {
         	Log.v(TAG, " Get Status On Post Execute");   		
      
-        	responseView.setText(response.getBody());
+        	responseView.setText(output);
             
         }
    	 
@@ -327,11 +332,17 @@ public class TalkActivity extends Activity  implements OnInitListener {
        	    s.signRequest(accessToken, req);
        	    response = req.send();
        	    //System.out.println(response.getBody());
-   			
-   			return response.getBody();
+       	    TweetParse xmlparse=new TweetParse();
+			List<TweetStore> aus=xmlparse.GetDetails(response);
+			Iterator it=aus.iterator();
+			while (it.hasNext()){
+				TweetStore Tweet=(TweetStore)it.next();
+				output=output+Tweet.getName()+" "+Tweet.getTweet()+"\r'n";
+			}
+   			return output;
 			}
 			return null;
-			
+			 
         }
    }
 }
