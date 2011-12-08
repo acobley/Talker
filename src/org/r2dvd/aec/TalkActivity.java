@@ -54,18 +54,22 @@ public class TalkActivity extends Activity  implements OnInitListener {
     
     private OloginSetup ols =null;
     private OGetResponse grs=null;
-	
+	private OGetStatus gs=null;
     
     TextView textView;
+    TextView responseView;
 	WebView webview;
 	OAuthService s =null;
 	Token requestToken=null; 
 	String authURL =null;
+	Token accessToken=null;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         textView = (TextView)findViewById(R.id.textview);
+        responseView = (TextView)findViewById(R.id.responseview);
         webview = (WebView) findViewById(R.id.webView1);
         speakBtn = (Button)findViewById(R.id.Speak);
 
@@ -89,6 +93,8 @@ public class TalkActivity extends Activity  implements OnInitListener {
 	    			 grs= new OGetResponse();
 	    			 grs.execute(url);
 	    			 
+	    			 gs= new OGetStatus();
+	    			 gs.execute(url);
                  //Response response=ols.GetResponse(url);
 	    			/*
 	    			if (response !=null){
@@ -219,7 +225,7 @@ public class TalkActivity extends Activity  implements OnInitListener {
     
     private class OGetResponse extends AsyncTask<String, Void, String> {
     	 Response response=null;
-         String Output=null;
+      
          AuthorStore aus=null;
     	@Override
         protected void onPreExecute() {
@@ -241,8 +247,9 @@ public class TalkActivity extends Activity  implements OnInitListener {
     	 }
     	 protected void onPostExecute(String url) {
          	Log.v(TAG, "On Post Execute");   		
-         	//textView.setText(response.getBody());
+         	
          	textView.setText("User "+aus.getname()+" ID "+aus.getUserId());
+         	
              
          }
     	 
@@ -252,7 +259,7 @@ public class TalkActivity extends Activity  implements OnInitListener {
  			Verifier v = new Verifier(verifier);
 
  			//save this token for practical use.
- 			Token accessToken = s.getAccessToken(requestToken, v);
+ 			accessToken = s.getAccessToken(requestToken, v);
 
  			//host twitter detected from callback oauth://twitter
  			if(uri.getHost().equals("twitter")){
@@ -261,9 +268,11 @@ public class TalkActivity extends Activity  implements OnInitListener {
     			OAuthRequest req = new OAuthRequest(Verb.GET,
                     "http://api.twitter.com/1/account/verify_credentials.xml");
     			s.signRequest(accessToken, req);
-    			Response response = req.send();
+    			response = req.send();
+    			//System.out.println(response.getBody());
     			XMLParser xmlparse=new XMLParser();
     			aus=xmlparse.GetDetails(response);
+    			
     			
     			return response;
  			}
@@ -271,4 +280,58 @@ public class TalkActivity extends Activity  implements OnInitListener {
  			
          }
     }
+    
+    
+    
+    private class OGetStatus extends AsyncTask<String, Void, String> {
+   	 Response response=null;
+   	 String body=null;
+
+   	@Override
+       protected void onPreExecute() {
+           Log.v("Oget Response", "onPreExecute");
+       }
+   	 protected String doInBackground(String... urls) {
+        	
+        	Log.v(TAG, "Starting Response " +urls.length);
+        	int count = urls.length;
+           
+           for (int i = 0; i < count; i++) {
+           	Log.v(TAG, "url "+urls[i]);	
+        	  body=GetResponse(urls[i]);
+        	   //Log.v(TAG, "response "+response.getBody());	
+        	   
+           }
+           return null;
+        	
+   	 }
+   	 protected void onPostExecute(String url) {
+        	Log.v(TAG, " Get Status On Post Execute");   		
+     
+        	responseView.setText(response.getBody());
+            
+        }
+   	 
+   	 String GetResponse(String url){
+        	Uri uri = Uri.parse(url);
+
+
+			//host twitter detected from callback oauth://twitter
+			if(uri.getHost().equals("twitter")){
+				//requesting xml because its easier
+           //for human to read as it comes back
+
+   			
+   			OAuthRequest req = new OAuthRequest(Verb.GET,
+                       "http://api.twitter.com/1/statuses/home_timeline.xml");
+       	    s.signRequest(accessToken, req);
+       	    response = req.send();
+       	    //System.out.println(response.getBody());
+   			
+   			return response.getBody();
+			}
+			return null;
+			
+        }
+   }
 }
