@@ -117,7 +117,10 @@ public class TalkActivity extends Activity  implements OnInitListener {
     }
     
     public void saySomething(View view) {
-    	mTts.speak("Hello World", TextToSpeech.QUEUE_ADD, null);
+    	
+    	CharSequence ch =responseView.getText();
+    	String text=ch.toString();
+    	mTts.speak(text, TextToSpeech.QUEUE_ADD, null);
     	mTts.speak("Goodbye World", TextToSpeech.QUEUE_ADD, null);
     }
     
@@ -337,7 +340,7 @@ public class TalkActivity extends Activity  implements OnInitListener {
 			Iterator it=aus.iterator();
 			while (it.hasNext()){
 				TweetStore Tweet=(TweetStore)it.next();
-				output=output+Tweet.getName()+" "+Tweet.getTweet()+"\r'n";
+				output=Tweet.getName()+" Says  "+Tweet.getTweet()+","+output;
 			}
    			return output;
 			}

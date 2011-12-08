@@ -125,6 +125,7 @@ throws SAXException
 	        switch(CurrentState){
 	        	case 0: if (!s.trim().equals(""))
 		        			System.out.println(s);
+	        	       au= new TweetStore();
 	        			au.setName(s);
 	        			System.out.println("Set "+au.getName());
 	        			
