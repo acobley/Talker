@@ -345,7 +345,7 @@ public class TalkActivity extends Activity  implements OnInitListener {
    			return output;
 			}
 			return null;
-			
+    
         }
    }
 }

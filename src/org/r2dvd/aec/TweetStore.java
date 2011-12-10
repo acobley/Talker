@@ -7,10 +7,21 @@ void setTweet(String Tweet){
 	//We should add some cleanup here:
 	//Detect url's and replace with "link"
 	//Detect RT and replace with ReTweeted  However what about pls RT?
-	System.out.println(Tweet);
-	Tweet.replaceAll("RT","Retweeted");
-	System.out.println(Tweet);
-	Tweet.replaceAll("#", "Hash Tag");
+
+	Tweet=Tweet.replaceFirst("RT","Retweeted");
+	Tweet=Tweet.replaceAll("RT","Retweet!");
+
+	Tweet=Tweet.replaceAll("#", "Hash Tag");
+	
+	int link=Tweet.indexOf("http://");
+    int endlink=Tweet.indexOf(" ", link);
+    if ((link>=0) && (endlink>link)){
+       String sLink= Tweet.substring(link, endlink);
+       System.out.println(sLink);	
+    }
+    	
+	
+	Tweet=Tweet.replaceAll("http://", "Link to:");
 	this.Tweet=Tweet;
 }
 
