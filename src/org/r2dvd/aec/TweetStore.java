@@ -1,5 +1,7 @@
 package org.r2dvd.aec;
 
+import java.net.URL;
+
 public class TweetStore {
 String Tweet=null;
 String Name =null;
@@ -17,7 +19,14 @@ void setTweet(String Tweet){
     int endlink=Tweet.indexOf(" ", link);
     if ((link>=0) && (endlink>link)){
        String sLink= Tweet.substring(link, endlink);
+       try {
+          URL url= new URL(sLink);
+          System.out.println( url.getHost());
+       }catch(Exception et){
+    	   System.out.println("URl can't be decoded");
+       }
        System.out.println(sLink);	
+       Tweet=Tweet.replaceAll(sLink, "Shortened URL");
     }
     	
 	
