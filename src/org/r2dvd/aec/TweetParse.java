@@ -108,7 +108,7 @@ throws SAXException
 			 eName = qName; // namespaceAware = false
 		
 		 if (ElementsMap.containsKey(eName)){
-			 System.out.println(eName);
+			 //System.out.println(eName);
 			 Integer ICurrentState =(Integer) ElementsMap.get(eName);
 			 try{
 				 CurrentState=ICurrentState.intValue();
@@ -150,23 +150,23 @@ throws SAXException
 		 String s = tmpString.toString();
 		 switch(CurrentState){
      	case 0:
-     		   if (!s.trim().equals(""))
-	        			System.out.println(s);
-     	       tmpString.append(s);
-     			au.setName(s);
-     			System.out.println("Set "+au.getName());
-     			tsl.add(au);
-     		
+     		   if (!s.trim().equals("")){
+	        	   //System.out.println(s);
+     	           //tmpString.append(s);
+     			   au.setName(s);
+     			   //System.out.println("Set "+au.getName());
+     			   tsl.add(au);
+     		   }
      			break;
      	case 1:
-     		   if (!s.trim().equals(""))
-	        			System.out.println(s);
-     		   tmpString.append(s);
-     			au= new TweetStore();
-     			au.setTweet(s); // This is Tweet
+     		   if (!s.trim().equals("")){
+	        	  //System.out.println(s);
+     		      //tmpString.append(s);
+     			  au= new TweetStore();
+     			  au.setTweet(s); // This is Tweet
      			
-     			System.out.println("Set"+au.getTweet());
-     			
+     			  //System.out.println("Set"+au.getTweet());
+     		   }
      			
      			break;
 

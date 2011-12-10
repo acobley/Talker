@@ -7,7 +7,9 @@ void setTweet(String Tweet){
 	//We should add some cleanup here:
 	//Detect url's and replace with "link"
 	//Detect RT and replace with ReTweeted  However what about pls RT?
-	Tweet.replaceFirst("RT","Retweeted");
+	System.out.println(Tweet);
+	Tweet.replaceAll("RT","Retweeted");
+	System.out.println(Tweet);
 	Tweet.replaceAll("#", "Hash Tag");
 	this.Tweet=Tweet;
 }

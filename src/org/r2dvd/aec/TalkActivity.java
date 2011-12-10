@@ -328,24 +328,24 @@ public class TalkActivity extends Activity  implements OnInitListener {
 			if(uri.getHost().equals("twitter")){
 				//requesting xml because its easier
            //for human to read as it comes back
-
+ 
    		 	
    			OAuthRequest req = new OAuthRequest(Verb.GET,
                        "http://api.twitter.com/1/statuses/home_timeline.xml");
        	    s.signRequest(accessToken, req);
        	    response = req.send();
-       	    System.out.println(response.getBody());
+       	    //System.out.println(response.getBody());
        	    TweetParse xmlparse=new TweetParse();
 			List<TweetStore> aus=xmlparse.GetDetails(response);
 			Iterator<TweetStore> it=aus.iterator();
 			while (it.hasNext()){
 				TweetStore Tweet=(TweetStore)it.next();
-				output=Tweet.getName()+" Says  "+Tweet.getTweet()+","+output;
+				output=Tweet.getName()+" Says  "+Tweet.getTweet()+".."+output;
 			}
    			return output;
 			}
 			return null;
-			 
+			
         }
    }
 }
