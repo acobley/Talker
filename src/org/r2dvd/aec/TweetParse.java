@@ -12,6 +12,8 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,6 +22,7 @@ public class TweetParse extends DefaultHandler{
 	  private int CurrentState=-1;
 	  TweetStore au;
 	  List<TweetStore> tsl = new LinkedList<TweetStore>();
+	  private StringBuilder tmpString=null;
 	public TweetParse(){
 		 ElementsMap.put("screen_name", 0);
 		 ElementsMap.put("text", 1);
@@ -29,6 +32,7 @@ public class TweetParse extends DefaultHandler{
 	}
 	
 	public List<TweetStore> GetStore(){
+		
 		return tsl;
 	}
 	
@@ -48,6 +52,8 @@ public class TweetParse extends DefaultHandler{
           saxParser.parse(body.getStream(), handler);
           
           aul=handler.GetStore();
+          Collections.reverse(aul);
+          //reverse it
       	}
 
       } catch (SAXParseException spe) {
@@ -96,6 +102,7 @@ throws SAXException
 {
 //indentLevel++;
 		 //System.out.print("ELEMENT: ");
+		 tmpString=new StringBuilder();
 		 String eName = lName; // element name
 		 if ("".equals(eName)) 
 			 eName = qName; // namespaceAware = false
@@ -117,31 +124,58 @@ throws SAXException
 	 public void characters(char buf[], int offset, int len)
 	    throws SAXException
 	    {
-	        //System.out.println("CHARS:   ");
-	        String s = new String(buf, offset, len);
+	         String s = new String(buf, offset, len);
+	         tmpString.append(s);
 	        
-	        if (au ==null)
-	        	System.out.println("Hmm, why is au null ?");
-	        switch(CurrentState){
-	        	case 0: if (!s.trim().equals(""))
-		        			System.out.println(s);
-	        	       au= new TweetStore();
-	        			au.setName(s);
-	        			System.out.println("Set "+au.getName());
-	        			
-	        			CurrentState=-1; //We've processed that now
-	        			break;
-	        	case 1:	if (!s.trim().equals(""))
-		        			System.out.println(s);
-	        			au.setTweet(s); // This is Tweet
-	        			
-	        			System.out.println("Set"+au.getTweet());
-	        			tsl.add(au);
-	        			CurrentState=-1; //We've processed that now
-	        			break;
-
-		
-	        	default:break;
-	        }
 	    }	 
+	 
+
+	 public void ignorableWhitespace(char buf[], int offset, int len)
+	    throws SAXException
+	    {
+		 String s = new String(buf, offset, len); 
+		
+		    System.out.println("Whitespace: "+s+ " offset "+offset+"len "+len);
+		    
+		
+	    }
+	 
+	 
+	 
+	 public void endElement(String uri,
+             String localName,
+             String qName)
+      throws SAXException{
+		 //System.out.println("EndElement"+uri+","+localName+","+qName);
+		 String s = tmpString.toString();
+		 switch(CurrentState){
+     	case 0:
+     		   if (!s.trim().equals(""))
+	        			System.out.println(s);
+     	       tmpString.append(s);
+     			au.setName(s);
+     			System.out.println("Set "+au.getName());
+     			tsl.add(au);
+     		
+     			break;
+     	case 1:
+     		   if (!s.trim().equals(""))
+	        			System.out.println(s);
+     		   tmpString.append(s);
+     			au= new TweetStore();
+     			au.setTweet(s); // This is Tweet
+     			
+     			System.out.println("Set"+au.getTweet());
+     			
+     			
+     			break;
+
+	
+     	default:break;
+     }
+		 
+		 
+		 CurrentState=-1; //We've processed that now
+
+	 }
 }

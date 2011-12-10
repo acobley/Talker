@@ -4,6 +4,11 @@ public class TweetStore {
 String Tweet=null;
 String Name =null;
 void setTweet(String Tweet){
+	//We should add some cleanup here:
+	//Detect url's and replace with "link"
+	//Detect RT and replace with ReTweeted  However what about pls RT?
+	Tweet.replaceFirst("RT","Retweeted");
+	Tweet.replaceAll("#", "Hash Tag");
 	this.Tweet=Tweet;
 }
 

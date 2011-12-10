@@ -117,7 +117,7 @@ public class TalkActivity extends Activity  implements OnInitListener {
     }
     
     public void saySomething(View view) {
-    	
+    	 
     	CharSequence ch =responseView.getText();
     	String text=ch.toString();
     	mTts.speak(text, TextToSpeech.QUEUE_ADD, null);
@@ -319,7 +319,7 @@ public class TalkActivity extends Activity  implements OnInitListener {
         	responseView.setText(output);
             
         }
-   	 
+   	  
    	 String GetResponse(String url){
         	Uri uri = Uri.parse(url);
 
@@ -329,15 +329,15 @@ public class TalkActivity extends Activity  implements OnInitListener {
 				//requesting xml because its easier
            //for human to read as it comes back
 
-   			
+   		 	
    			OAuthRequest req = new OAuthRequest(Verb.GET,
                        "http://api.twitter.com/1/statuses/home_timeline.xml");
        	    s.signRequest(accessToken, req);
        	    response = req.send();
-       	    //System.out.println(response.getBody());
+       	    System.out.println(response.getBody());
        	    TweetParse xmlparse=new TweetParse();
 			List<TweetStore> aus=xmlparse.GetDetails(response);
-			Iterator it=aus.iterator();
+			Iterator<TweetStore> it=aus.iterator();
 			while (it.hasNext()){
 				TweetStore Tweet=(TweetStore)it.next();
 				output=Tweet.getName()+" Says  "+Tweet.getTweet()+","+output;
