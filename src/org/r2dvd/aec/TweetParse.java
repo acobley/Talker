@@ -26,6 +26,7 @@ public class TweetParse extends DefaultHandler{
 	public TweetParse(){
 		 ElementsMap.put("screen_name", 0);
 		 ElementsMap.put("text", 1);
+		 ElementsMap.put("id", 2);
 		 
 		 au = new TweetStore();
 
@@ -169,6 +170,22 @@ throws SAXException
      		   }
      			
      			break;
+     	case 2:
+  		   if (!s.trim().equals("")){
+	        	  //System.out.println(s);
+  		      //tmpString.append(s);
+  			 long id=0;
+  			 try{
+  				 id=Long.parseLong(s);
+  			 }catch(Exception et){
+  				 System.out.println("Can't parse id "+s);
+  			 }
+  			  au.setId(id); 
+  			
+  			  System.out.println("Tweet ParseSet"+au.getId()+" : "+s);
+  		   }
+  			
+  			break;		
 
 	
      	default:break;

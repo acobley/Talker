@@ -56,7 +56,7 @@ public class TalkActivity extends Activity  implements OnInitListener {
     
     private HashMap ProvidersMap = new HashMap();
     
-    private OloginSetup ols =null;
+    private OLoginSetup ols =null;
     private OGetResponse grs=null;
 	private OGetStatus gs=null;
     
@@ -67,6 +67,7 @@ public class TalkActivity extends Activity  implements OnInitListener {
 	Token requestToken=null; 
 	String authURL =null;
 	Token accessToken=null;
+	long lastTweet=0;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,7 +82,7 @@ public class TalkActivity extends Activity  implements OnInitListener {
         Intent checkIntent = new Intent();
         checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
         startActivityForResult(checkIntent, REQ_TTS_STATUS_CHECK);
-        ols= new OloginSetup();
+        ols= new OLoginSetup();
         ols.execute();
         
         
@@ -160,13 +161,13 @@ public class TalkActivity extends Activity  implements OnInitListener {
             case TextToSpeech.Engine.CHECK_VOICE_DATA_PASS:
                 // TTS is up and running
                 mTts = new TextToSpeech(this, this);
-                Log.v(TAG, "Pico is installed okay");
+                //Log.v(TAG, "Pico is installed okay");
                 break;
             case TextToSpeech.Engine.CHECK_VOICE_DATA_BAD_DATA:
             case TextToSpeech.Engine.CHECK_VOICE_DATA_MISSING_DATA:
             case TextToSpeech.Engine.CHECK_VOICE_DATA_MISSING_VOLUME:
                 // missing data, install it
-                Log.v(TAG, "Need language stuff: " + resultCode);
+                //Log.v(TAG, "Need language stuff: " + resultCode);
                 Intent installIntent = new Intent();
                 installIntent.setAction(
                     TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
@@ -174,7 +175,7 @@ public class TalkActivity extends Activity  implements OnInitListener {
                 break;
             case TextToSpeech.Engine.CHECK_VOICE_DATA_FAIL:
             default:
-                Log.e(TAG, "Got a failure. TTS apparently not available");
+                //Log.e(TAG, "Got a failure. TTS apparently not available");
             }
         }
         else {
@@ -186,18 +187,18 @@ public class TalkActivity extends Activity  implements OnInitListener {
   
 
 
-    private class OloginSetup extends AsyncTask<String, Void, String> {
+    private class OLoginSetup extends AsyncTask<String, Void, String> {
     
 
     	@Override
         protected void onPreExecute() {
-            Log.v("AsyncTask", "onPreExecute");
+            //Log.v("AsyncTask", "onPreExecute");
         }
 
     	
         protected String doInBackground(String... urls) {
         	
-        	Log.v(TAG, "Starting async");
+        	//Log.v(TAG, "Starting async");
         	//set up service and get request token as seen on scribe website
             //https://github.com/fernandezpablo85/scribe-java/wiki/Getting-Started
         	
@@ -207,17 +208,17 @@ public class TalkActivity extends Activity  implements OnInitListener {
             .apiSecret(APISECRET)
     		.callback(CALLBACK)
     		.build();
-            Log.v(TAG, "got Service");
+            //Log.v(TAG, "got Service");
             
             try {
             	 requestToken= s.getRequestToken();
             }catch(Exception et){
-            	Log.v(TAG, "didn't get token  "+et);
+            	//Log.v(TAG, "didn't get token  "+et);
             	return (null);
             }
-    		Log.v(TAG, "got token");
+    		//Log.v(TAG, "got token");
     		authURL = s.getAuthorizationUrl(requestToken);
-    		Log.v(TAG, "got authurl" + authURL);
+    		//Log.v(TAG, "got authurl" + authURL);
 
     	    //send user to authorization page
     		webview.loadUrl(authURL); 
@@ -228,7 +229,7 @@ public class TalkActivity extends Activity  implements OnInitListener {
     
         
         protected void onPostExecute(String url) {
-        	Log.v(TAG, "On Post Execute");   		
+        	//Log.v(TAG, "On Post Execute");   		
         	
         	
             
@@ -242,24 +243,24 @@ public class TalkActivity extends Activity  implements OnInitListener {
          AuthorStore aus=null;
     	@Override
         protected void onPreExecute() {
-            Log.v("Oget Response", "onPreExecute");
+            //Log.v("Oget Response", "onPreExecute");
         }
     	 protected String doInBackground(String... urls) {
          	
-         	Log.v(TAG, "Starting Response " +urls.length);
+         	//Log.v(TAG, "Starting Response " +urls.length);
          	int count = urls.length;
             
             for (int i = 0; i < count; i++) {
-            	Log.v(TAG, "url "+urls[i]);	
+            	//Log.v(TAG, "url "+urls[i]);	
          	  response=GetResponse(urls[i]);
-         	   //Log.v(TAG, "response "+response.getBody());	
+         	   ////Log.v(TAG, "response "+response.getBody());	
          	   
             }
             return null;
          	
     	 }
     	 protected void onPostExecute(String url) {
-         	Log.v(TAG, "On Post Execute");   		
+         	//Log.v(TAG, "On Post Execute");   		
          	
          	textView.setText("User "+aus.getname()+" ID "+aus.getUserId());
          	
@@ -282,7 +283,7 @@ public class TalkActivity extends Activity  implements OnInitListener {
                     "http://api.twitter.com/1/account/verify_credentials.xml");
     			s.signRequest(accessToken, req);
     			response = req.send();
-    			//System.out.println(response.getBody());
+    			////System.out.println(response.getBody());
     			XMLParser xmlparse=new XMLParser();
     			aus=xmlparse.GetDetails(response);
     			
@@ -303,24 +304,24 @@ public class TalkActivity extends Activity  implements OnInitListener {
 
    	@Override
        protected void onPreExecute() {
-           Log.v("Oget Response", "onPreExecute");
+           //Log.v("Oget Response", "onPreExecute");
        }
    	 protected String doInBackground(String... urls) {
         	
-        	Log.v(TAG, "Starting Response " +urls.length);
+        	//Log.v(TAG, "Starting Response " +urls.length);
         	int count = urls.length;
            
            for (int i = 0; i < count; i++) {
-           	Log.v(TAG, "url "+urls[i]);	
+           	//Log.v(TAG, "url "+urls[i]);	
         	  body=GetResponse(urls[i]);
-        	   //Log.v(TAG, "response "+response.getBody());	
+        	   ////Log.v(TAG, "response "+response.getBody());	
         	   
            }
            return null;
         	
    	 }
    	 protected void onPostExecute(String url) {
-        	Log.v(TAG, " Get Status On Post Execute");   		
+        	//Log.v(TAG, " Get Status On Post Execute");   		
      
         	responseView.setText(output);
             
@@ -344,9 +345,19 @@ public class TalkActivity extends Activity  implements OnInitListener {
        	    TweetParse xmlparse=new TweetParse();
 			List<TweetStore> aus=xmlparse.GetDetails(response);
 			Iterator<TweetStore> it=aus.iterator();
+			boolean lastTweetSet=false;
+			output="";
 			while (it.hasNext()){
 				TweetStore Tweet=(TweetStore)it.next();
-				output=Tweet.getName()+" Says  "+Tweet.getTweet()+".."+output;
+				   System.out.println("LastTweet "+lastTweet+" "+Tweet.getId()+" : "+lastTweetSet+" Says  "+Tweet.getTweet());
+
+				if (Tweet.getId()>lastTweet){
+				   output=Tweet.getId()+" :"+Tweet.getName()+" Says  "+Tweet.getTweet()+".."+output;
+				   if (lastTweetSet==false){
+					   lastTweet=Tweet.getId();
+					   lastTweetSet=true;
+				   }
+				}
 			}
    			return output;
 			}
@@ -375,7 +386,7 @@ public class TalkActivity extends Activity  implements OnInitListener {
 		  if (Thread.currentThread() == myThread1){
 		     while(true){
 		        try{
-		          Thread.sleep(10000);
+		          Thread.sleep(100000);
 		        }catch (Exception ignored){
 		           return;
 		        }
