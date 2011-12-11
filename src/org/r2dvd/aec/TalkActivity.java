@@ -84,11 +84,14 @@ public class TalkActivity extends Activity  implements OnInitListener {
         ols= new OloginSetup();
         ols.execute();
         
+        
+        
+        
       //attach WebViewClient to intercept the callback url
 	       webview.setWebViewClient(new WebViewClient(){
 	       	@Override
 	    	public boolean shouldOverrideUrlLoading(WebView view, String url){
-
+	       		Scheduler sc=null;
 	    		//check for our custom callback protocol
 	       //otherwise use default behavior
 	    		if(url.startsWith("oauth")){
@@ -99,6 +102,9 @@ public class TalkActivity extends Activity  implements OnInitListener {
 	    			 
 	    			 gs= new OGetStatus();
 	    			 gs.execute(url);
+	    			 
+	    			 sc=new Scheduler(url);
+	    			 sc.start();
                  //Response response=ols.GetResponse(url);
 	    			/*
 	    			if (response !=null){
@@ -347,5 +353,48 @@ public class TalkActivity extends Activity  implements OnInitListener {
 			return null;
     
         }
+   }
+    
+   private class Scheduler implements Runnable {
+	   Thread myThread1;
+	   int i=0;
+	   String url=null;
+	   Scheduler (String url){
+		   this.url=url;
+	   }
+	   public void start(){
+		     if  (myThread1 == null){
+		          myThread1= new Thread(this);
+		          myThread1.start();
+		     }
+		  }
+		 
+
+		public void run(){
+
+		  if (Thread.currentThread() == myThread1){
+		     while(true){
+		        try{
+		          Thread.sleep(10000);
+		        }catch (Exception ignored){
+		           return;
+		        }
+		        
+		        System.out.println("Running " +i);
+                i++;
+                gs= new OGetStatus();
+   			 gs.execute(url);
+		      
+		     }
+		   }
+		}
+		
+		public void stop(){
+		     if  (myThread1 != null){
+		          myThread1.stop();
+		          myThread1= null;
+		     }
+		 }
+	   
    }
 }
