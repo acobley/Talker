@@ -7,9 +7,11 @@ import java.io.*;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import android.os.AsyncTask;
+import android.os.PowerManager;
 
 import android.app.Activity;
 import android.net.Uri;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 //import android.os.StrictMode;
@@ -69,7 +71,7 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
 	String authURL =null;
 	Token accessToken=null;
 	long lastTweet=0;
-
+	PowerManager.WakeLock wl =null;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -89,7 +91,8 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
         ols= new OLoginSetup();
         ols.execute();
         
-        
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "ZugZugShebang");
         
         
       //attach WebViewClient to intercept the callback url
@@ -138,6 +141,9 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
     	HashMap<String, String> myHashAlarm = new HashMap();
     	myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID,"endoftext");
     	mTts.setOnUtteranceCompletedListener(this);
+    	if (wl!=null){
+    		wl.acquire(); //turn on the screen
+    	}
     	mTts.speak(text, TextToSpeech.QUEUE_ADD, myHashAlarm);
     	
     }
@@ -162,6 +168,7 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
 
     public void onUtteranceCompleted(String uttId) {
     	System.out.println("utterance completed");
+    	wl.release();// turn off the screen
     	Log.v(TAG, "utterance completed");
         if (uttId == "endoftext") {
             //playAnnoyingMusic();
@@ -187,7 +194,7 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
                
                 if ( mTts.isLanguageAvailable(Locale.UK)==TextToSpeech.LANG_COUNTRY_AVAILABLE)
                 	mTts.setLanguage(Locale.UK);;
-                //Log.v(TAG, "Pico is installed okay");
+                Log.v(TAG, "Pico is installed okay");
                 break;
             case TextToSpeech.Engine.CHECK_VOICE_DATA_BAD_DATA:
             case TextToSpeech.Engine.CHECK_VOICE_DATA_MISSING_DATA:
@@ -224,7 +231,7 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
     	
         protected String doInBackground(String... urls) {
         	
-        	//Log.v(TAG, "Starting async");
+        	Log.v(TAG, "Starting async");
         	//set up service and get request token as seen on scribe website
             //https://github.com/fernandezpablo85/scribe-java/wiki/Getting-Started
         	
