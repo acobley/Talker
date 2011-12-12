@@ -56,7 +56,7 @@ public class TweetParse extends DefaultHandler{
           saxParser.parse(body.getStream(), handler);
           
           aul=handler.GetStore();
-          Collections.reverse(aul);
+          //Collections.reverse(aul);
           //reverse it
       	}
 
@@ -189,7 +189,7 @@ throws SAXException
 	  			 }
 	  			  au.setId(id); 
 	  			
-	  			  System.out.println("Tweet ParseSet"+au.getId()+" : "+s);
+	  			  //System.out.println("Tweet ParseSet"+au.getId()+" : "+s);
   			  }
   		   }
   			

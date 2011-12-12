@@ -127,8 +127,9 @@ public class TalkActivity extends Activity  implements OnInitListener {
     	 
     	CharSequence ch =responseView.getText();
     	String text=ch.toString();
+    	System.out.println("text Length"+text.length());
     	mTts.speak(text, TextToSpeech.QUEUE_ADD, null);
-    	mTts.speak("Goodbye World", TextToSpeech.QUEUE_ADD, null);
+    	
     }
     
     @Override
@@ -262,7 +263,7 @@ public class TalkActivity extends Activity  implements OnInitListener {
     	 protected void onPostExecute(String url) {
          	//Log.v(TAG, "On Post Execute");   		
          	
-         	textView.setText("User "+aus.getname()+" ID "+aus.getUserId());
+         	textView.setText(""+aus.getname());
          	
              
          }
@@ -324,6 +325,7 @@ public class TalkActivity extends Activity  implements OnInitListener {
         	//Log.v(TAG, " Get Status On Post Execute");   		
      
         	responseView.setText(output);
+        	saySomething(textView);
             
         }
    	  
@@ -349,10 +351,10 @@ public class TalkActivity extends Activity  implements OnInitListener {
 			output="";
 			while (it.hasNext()){
 				TweetStore Tweet=(TweetStore)it.next();
-				   System.out.println("LastTweet "+lastTweet+" "+Tweet.getId()+" : "+lastTweetSet+" Says  "+Tweet.getTweet());
+				//System.out.println("LastTweet "+lastTweet+" "+Tweet.getId()+" : "+lastTweetSet+" Says  "+Tweet.getTweet());
 
 				if (Tweet.getId()>lastTweet){
-				   output=Tweet.getId()+" :"+Tweet.getName()+" Says  "+Tweet.getTweet()+".."+output;
+				   output=Tweet.getName()+" Says,  "+Tweet.getTweet()+".."+output;
 				   if (lastTweetSet==false){
 					   lastTweet=Tweet.getId();
 					   lastTweetSet=true;
