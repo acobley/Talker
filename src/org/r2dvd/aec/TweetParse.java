@@ -24,11 +24,14 @@ public class TweetParse extends DefaultHandler{
 	  List<TweetStore> tsl = new LinkedList<TweetStore>();
 	  private StringBuilder tmpString=null;
 	  boolean inUser=false;
+	  boolean inReTweet=false;
+	  
 	public TweetParse(){
 		 ElementsMap.put("screen_name", 0);
 		 ElementsMap.put("text", 1);
 		 ElementsMap.put("id", 2);
 		 ElementsMap.put("user", 3);
+		 ElementsMap.put("retweeted_status", 3);
 		 
 		 
 		 au = new TweetStore();
@@ -119,6 +122,9 @@ throws SAXException
 				 if (CurrentState==3){
 					 inUser=true;
 				 }
+				 if (CurrentState==4){
+					 inReTweet=true;
+				 }
 			 }catch(Exception et){
 				 System.out.println("Can't convert CurrentState to int");
 			 }
@@ -169,9 +175,10 @@ throws SAXException
      		   if (!s.trim().equals("")){
 	        	  //System.out.println(s);
      		      //tmpString.append(s);
-     			  au= new TweetStore();
-     			  au.setTweet(s); // This is Tweet
-     			
+     			   if (inReTweet==false){
+     			      au= new TweetStore();
+     			      au.setTweet(s); // This is Tweet
+     			   }
      			  //System.out.println("Set"+au.getTweet());
      		   }
      			
@@ -203,6 +210,7 @@ throws SAXException
 		 CurrentState=-1; //We've processed that now
 		 int iName=0;
 		 int iLocalName=0;
+		 
 		 if  (qName !=null){
 		    Integer IName=(Integer) ElementsMap.get(qName);
 		    if (IName !=null)
@@ -216,7 +224,11 @@ throws SAXException
 		 if ((iName==3) || (iLocalName==3) ){
 			 inUser=false;
 		 }
-
+		 if ((iName==4) || (iLocalName==4) ){
+			 inReTweet=false;
+		 }
+		 
+		 
 	 }
 	 
 	

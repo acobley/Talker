@@ -148,8 +148,10 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
     	if (view == mentionView)    
     	    ch ="Mentions."+mentionView.getText();
     	
-    	String text=ch.toString();
-    	
+    	String text="";
+    	if (ch !=null)
+    	   text= ch.toString();
+    	 
     	System.out.println("text Length"+text.length());
     	HashMap<String, String> myHashAlarm = new HashMap();
     	myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID,"endoftext");
@@ -403,7 +405,7 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
 
 				if (Tweet.getId()>lastTweet){
 					//System.out.println("LastTweet "+lastTweet+" "+Tweet.getId()+" : "+" Says  "+Tweet.getTweet());
-				   output=Tweet.getName()+" Says,  "+Tweet.getTweet()+".."+output;
+				   output=Tweet.getName()+" Says,  "+Tweet.getTweet()+".."+output+"\r\n";
 				  
 				   
 				}
