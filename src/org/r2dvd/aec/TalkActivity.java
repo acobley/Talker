@@ -142,11 +142,14 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
     
     public void saySomething(View view) {
     	 
-    	CharSequence ch =responseView.getText();
-    	CharSequence ch2 =mentionView.getText();
+    	CharSequence ch=null;
+    	if (view==responseView)
+    		ch=responseView.getText();
+    	if (view == mentionView)    
+    	    ch ="Mentions."+mentionView.getText();
+    	
     	String text=ch.toString();
-    	if (ch2!=null)
-    		text=text+".. Mentions.."+ch2.toString();
+    	
     	System.out.println("text Length"+text.length());
     	HashMap<String, String> myHashAlarm = new HashMap();
     	myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID,"endoftext");
@@ -367,7 +370,7 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
         	//Log.v(TAG, " Get Status On Post Execute");   		
             if (output.length()>0){
         	   responseView.setText(output);
-        	   saySomething(textView);
+        	   saySomething(responseView);
             }
             
         }
@@ -451,7 +454,7 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
            	//Log.v(TAG, " Get Status On Post Execute");   		
                if (output.length()>0){
            	   mentionView.setText(output);
-           	   saySomething(textView);
+           	   saySomething(mentionView);
                }
                
            }
