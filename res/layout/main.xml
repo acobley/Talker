@@ -30,6 +30,15 @@
 
     </EditText>
 
+    <EditText
+            android:id="@+id/mentionview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/bkColor"
+            android:textColor="@color/txtColor" >
+
+    </EditText>        
+            
     <WebView
         android:id="@+id/webView1"
         android:layout_width="match_parent"

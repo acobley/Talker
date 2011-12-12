@@ -62,15 +62,19 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
     private OLoginSetup ols =null;
     private OGetResponse grs=null;
 	private OGetStatus gs=null;
+	private OGetMentions ms=null;
     
     TextView textView;
     TextView responseView;
+    TextView mentionView;
+    
 	WebView webview;
 	OAuthService s =null;
 	Token requestToken=null; 
 	String authURL =null;
 	Token accessToken=null;
 	long lastTweet=0;
+	long lastMention=0;
 	PowerManager.WakeLock wl =null;
 	
     @Override
@@ -79,11 +83,13 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
         setContentView(R.layout.main);
         textView = (TextView)findViewById(R.id.textview);
         responseView = (TextView)findViewById(R.id.responseview);
+        mentionView = (TextView)findViewById(R.id.mentionview);
         webview = (WebView) findViewById(R.id.webView1);
         speakBtn = (Button)findViewById(R.id.Speak);
         webview.setVisibility(View.VISIBLE);
         textView.setVisibility(View.GONE);
     	responseView.setVisibility(View.GONE);
+    	mentionView.setVisibility(View.GONE);
      // Check to be sure that TTS exists and is okay to use
         Intent checkIntent = new Intent();
         checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
@@ -108,6 +114,7 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
 	    			webview.setVisibility(View.GONE);
 	    			textView.setVisibility(View.VISIBLE);
 	            	responseView.setVisibility(View.VISIBLE);
+	            	mentionView.setVisibility(View.VISIBLE);
 	    			 grs= new OGetResponse();
 	    			 grs.execute(url);
 	    			 
@@ -136,7 +143,10 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
     public void saySomething(View view) {
     	 
     	CharSequence ch =responseView.getText();
+    	CharSequence ch2 =mentionView.getText();
     	String text=ch.toString();
+    	if (ch2!=null)
+    		text=text+".. Mentions.."+ch2.toString();
     	System.out.println("text Length"+text.length());
     	HashMap<String, String> myHashAlarm = new HashMap();
     	myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID,"endoftext");
@@ -389,7 +399,7 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
 				//System.out.println("LastTweet "+lastTweet+" "+Tweet.getId()+" : "+" Says  "+Tweet.getTweet());
 
 				if (Tweet.getId()>lastTweet){
-					System.out.println("LastTweet "+lastTweet+" "+Tweet.getId()+" : "+" Says  "+Tweet.getTweet());
+					//System.out.println("LastTweet "+lastTweet+" "+Tweet.getId()+" : "+" Says  "+Tweet.getTweet());
 				   output=Tweet.getName()+" Says,  "+Tweet.getTweet()+".."+output;
 				  
 				   
@@ -411,6 +421,90 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
      
         }
    } 
+    
+    
+    
+    private class OGetMentions extends AsyncTask<String, Void, String> {
+      	 Response response=null;
+      	 String body=null;
+      	 String output=null;
+
+      	@Override
+          protected void onPreExecute() {
+              //Log.v("Oget Response", "onPreExecute");
+          }
+      	 protected String doInBackground(String... urls) {
+           	
+           	//Log.v(TAG, "Starting Response " +urls.length);
+           	int count = urls.length;
+              
+              for (int i = 0; i < count; i++) {
+              	//Log.v(TAG, "url "+urls[i]);	
+           	  body=GetResponse(urls[i]);
+           	   ////Log.v(TAG, "response "+response.getBody());	
+           	   
+              }
+              return null;
+           	
+      	 }
+      	 protected void onPostExecute(String url) {
+           	//Log.v(TAG, " Get Status On Post Execute");   		
+               if (output.length()>0){
+           	   mentionView.setText(output);
+           	   saySomething(textView);
+               }
+               
+           }
+      	  
+      	 String GetResponse(String url){
+           	Uri uri = Uri.parse(url);
+
+
+   			//host twitter detected from callback oauth://twitter
+   			if(uri.getHost().equals("twitter")){
+   				//requesting xml because its easier
+              //for human to read as it comes back
+    
+      		 	
+      			OAuthRequest req = new OAuthRequest(Verb.GET,
+                          "http://api.twitter.com/1/statuses/mentions.xml");
+          	    s.signRequest(accessToken, req);
+          	    response = req.send();
+          	    //System.out.println(response.getBody());
+          	    TweetParse xmlparse=new TweetParse();
+   			List<TweetStore> aus=xmlparse.GetDetails(response);
+   			Iterator<TweetStore> it=aus.iterator();
+   			
+   			output="";
+   		    boolean first=false;
+   		    long temp=0;
+   			while (it.hasNext()){
+   				TweetStore Tweet=(TweetStore)it.next();
+   				//System.out.println("LastTweet "+lastTweet+" "+Tweet.getId()+" : "+" Says  "+Tweet.getTweet());
+
+   				if (Tweet.getId()>lastMention){
+   					//System.out.println("LastTweet "+lastTweet+" "+Tweet.getId()+" : "+" Says  "+Tweet.getTweet());
+   				   output=Tweet.getName()+" Says,  "+Tweet.getTweet()+".."+output;
+   				  
+   				   
+   				}
+   				if (lastMention==0){
+   					lastMention=Tweet.getId();
+   				}
+                   if (first==false){
+                   	temp=Tweet.getId();
+                   	first=true;
+                   }
+   			}
+   			lastMention=temp;
+   		
+      			return output;
+   			
+   			}
+   			return null;
+        
+           }
+      } 
     
    private class Scheduler implements Runnable {
 	   Thread myThread1;
@@ -441,8 +535,9 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
                 i++;
                 gs= new OGetStatus();
    			    gs.execute(url);
-   			    Sleeptime=30000;
-		      
+   			    Sleeptime=15000;
+   			    ms= new OGetMentions();
+			    ms.execute(url);
 		     }
 		   }
 		}
