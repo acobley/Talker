@@ -12,8 +12,8 @@ import android.app.Activity;
 import android.net.Uri;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.StrictMode;
-import android.os.StrictMode.ThreadPolicy;
+//import android.os.StrictMode;
+//import android.os.StrictMode.ThreadPolicy;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
@@ -77,7 +77,9 @@ public class TalkActivity extends Activity  implements OnInitListener {
         responseView = (TextView)findViewById(R.id.responseview);
         webview = (WebView) findViewById(R.id.webView1);
         speakBtn = (Button)findViewById(R.id.Speak);
-
+        webview.setVisibility(View.VISIBLE);
+        textView.setVisibility(View.GONE);
+    	responseView.setVisibility(View.GONE);
      // Check to be sure that TTS exists and is okay to use
         Intent checkIntent = new Intent();
         checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
@@ -97,12 +99,15 @@ public class TalkActivity extends Activity  implements OnInitListener {
 	       //otherwise use default behavior
 	    		if(url.startsWith("oauth")){
 	    			//authorization complete hide webview for now.
+	    			
 	    			webview.setVisibility(View.GONE);
+	    			textView.setVisibility(View.VISIBLE);
+	            	responseView.setVisibility(View.VISIBLE);
 	    			 grs= new OGetResponse();
 	    			 grs.execute(url);
 	    			 
-	    			 gs= new OGetStatus();
-	    			 gs.execute(url);
+	    			 //gs= new OGetStatus();
+	    			 //gs.execute(url);
 	    			 
 	    			 sc=new Scheduler(url);
 	    			 sc.start();
@@ -323,9 +328,10 @@ public class TalkActivity extends Activity  implements OnInitListener {
    	 }
    	 protected void onPostExecute(String url) {
         	//Log.v(TAG, " Get Status On Post Execute");   		
-     
-        	responseView.setText(output);
-        	saySomething(textView);
+            if (output.length()>0){
+        	   responseView.setText(output);
+        	   saySomething(textView);
+            }
             
         }
    	  
@@ -366,12 +372,13 @@ public class TalkActivity extends Activity  implements OnInitListener {
 			return null;
      
         }
-   }
+   } 
     
    private class Scheduler implements Runnable {
 	   Thread myThread1;
 	   int i=0;
 	   String url=null;
+	   long Sleeptime=5000;
 	   Scheduler (String url){
 		   this.url=url;
 	   }
@@ -387,7 +394,7 @@ public class TalkActivity extends Activity  implements OnInitListener {
 		  if (Thread.currentThread() == myThread1){
 		     while(true){
 		        try{
-		          Thread.sleep(100000);
+		          Thread.sleep(Sleeptime);
 		        }catch (Exception ignored){
 		           return;
 		        }
@@ -395,7 +402,8 @@ public class TalkActivity extends Activity  implements OnInitListener {
 		        System.out.println("Running " +i);
                 i++;
                 gs= new OGetStatus();
-   			 gs.execute(url);
+   			    gs.execute(url);
+   			    Sleeptime=30000;
 		      
 		     }
 		   }
