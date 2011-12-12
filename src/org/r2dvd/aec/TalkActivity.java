@@ -37,8 +37,9 @@ import org.scribe.oauth.OAuthService;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
-public class TalkActivity extends Activity  implements OnInitListener {
+public class TalkActivity extends Activity  implements OnInitListener, TextToSpeech.OnUtteranceCompletedListener{
     /** Called when the activity is first created. */
 	private static final int REQ_TTS_STATUS_CHECK = 0;
 	private TextToSpeech mTts;
@@ -68,6 +69,7 @@ public class TalkActivity extends Activity  implements OnInitListener {
 	String authURL =null;
 	Token accessToken=null;
 	long lastTweet=0;
+
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -133,7 +135,10 @@ public class TalkActivity extends Activity  implements OnInitListener {
     	CharSequence ch =responseView.getText();
     	String text=ch.toString();
     	System.out.println("text Length"+text.length());
-    	mTts.speak(text, TextToSpeech.QUEUE_ADD, null);
+    	HashMap<String, String> myHashAlarm = new HashMap();
+    	myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID,"endoftext");
+    	mTts.setOnUtteranceCompletedListener(this);
+    	mTts.speak(text, TextToSpeech.QUEUE_ADD, myHashAlarm);
     	
     }
     
@@ -150,10 +155,22 @@ public class TalkActivity extends Activity  implements OnInitListener {
     {
         super.onPause();
         // if we're losing focus, stop talking
-        if( mTts != null)
-            mTts.stop();
+        //Actually, lets not !
+        //if( mTts != null)
+        //    mTts.stop();
     }
 
+    public void onUtteranceCompleted(String uttId) {
+    	System.out.println("utterance completed");
+    	Log.v(TAG, "utterance completed");
+        if (uttId == "endoftext") {
+            //playAnnoyingMusic();
+        	System.out.println("end of speach");
+        	Log.v(TAG, "endof speach");
+        } 
+    }
+    
+    
     @Override
     public void onDestroy()
     {
@@ -167,6 +184,9 @@ public class TalkActivity extends Activity  implements OnInitListener {
             case TextToSpeech.Engine.CHECK_VOICE_DATA_PASS:
                 // TTS is up and running
                 mTts = new TextToSpeech(this, this);
+               
+                if ( mTts.isLanguageAvailable(Locale.UK)==TextToSpeech.LANG_COUNTRY_AVAILABLE)
+                	mTts.setLanguage(Locale.UK);;
                 //Log.v(TAG, "Pico is installed okay");
                 break;
             case TextToSpeech.Engine.CHECK_VOICE_DATA_BAD_DATA:
@@ -353,21 +373,32 @@ public class TalkActivity extends Activity  implements OnInitListener {
        	    TweetParse xmlparse=new TweetParse();
 			List<TweetStore> aus=xmlparse.GetDetails(response);
 			Iterator<TweetStore> it=aus.iterator();
-			boolean lastTweetSet=false;
+			
 			output="";
+		    boolean first=false;
+		    long temp=0;
 			while (it.hasNext()){
 				TweetStore Tweet=(TweetStore)it.next();
-				//System.out.println("LastTweet "+lastTweet+" "+Tweet.getId()+" : "+lastTweetSet+" Says  "+Tweet.getTweet());
+				//System.out.println("LastTweet "+lastTweet+" "+Tweet.getId()+" : "+" Says  "+Tweet.getTweet());
 
 				if (Tweet.getId()>lastTweet){
+					System.out.println("LastTweet "+lastTweet+" "+Tweet.getId()+" : "+" Says  "+Tweet.getTweet());
 				   output=Tweet.getName()+" Says,  "+Tweet.getTweet()+".."+output;
-				   if (lastTweetSet==false){
-					   lastTweet=Tweet.getId();
-					   lastTweetSet=true;
-				   }
+				  
+				   
 				}
+				if (lastTweet==0){
+					lastTweet=Tweet.getId();
+				}
+                if (first==false){
+                	temp=Tweet.getId();
+                	first=true;
+                }
 			}
+			lastTweet=temp;
+		
    			return output;
+			
 			}
 			return null;
      
@@ -378,7 +409,7 @@ public class TalkActivity extends Activity  implements OnInitListener {
 	   Thread myThread1;
 	   int i=0;
 	   String url=null;
-	   long Sleeptime=5000;
+	   long Sleeptime=10000;
 	   Scheduler (String url){
 		   this.url=url;
 	   }

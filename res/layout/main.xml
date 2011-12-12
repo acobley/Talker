@@ -15,13 +15,18 @@
     <EditText
         android:id="@+id/textview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:background="@color/bkColor"
+        android:textColor="@color/txtColor" >
+
     </EditText>
     
         <EditText
-        android:id="@+id/responseview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+            android:id="@+id/responseview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/bkColor"
+            android:textColor="@color/txtColor" >
 
     </EditText>
 
