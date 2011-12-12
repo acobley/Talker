@@ -362,7 +362,7 @@ public class TalkActivity extends Activity  implements OnInitListener {
    			return output;
 			}
 			return null;
-    
+     
         }
    }
     
@@ -380,7 +380,6 @@ public class TalkActivity extends Activity  implements OnInitListener {
 		     }
 		  }
 		 
-
 		public void run(){
 
 		  if (Thread.currentThread() == myThread1){

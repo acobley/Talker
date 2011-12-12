@@ -23,10 +23,13 @@ public class TweetParse extends DefaultHandler{
 	  TweetStore au;
 	  List<TweetStore> tsl = new LinkedList<TweetStore>();
 	  private StringBuilder tmpString=null;
+	  boolean inUser=false;
 	public TweetParse(){
 		 ElementsMap.put("screen_name", 0);
 		 ElementsMap.put("text", 1);
 		 ElementsMap.put("id", 2);
+		 ElementsMap.put("user", 3);
+		 
 		 
 		 au = new TweetStore();
 
@@ -113,6 +116,9 @@ throws SAXException
 			 Integer ICurrentState =(Integer) ElementsMap.get(eName);
 			 try{
 				 CurrentState=ICurrentState.intValue();
+				 if (CurrentState==3){
+					 inUser=true;
+				 }
 			 }catch(Exception et){
 				 System.out.println("Can't convert CurrentState to int");
 			 }
@@ -147,7 +153,7 @@ throws SAXException
              String localName,
              String qName)
       throws SAXException{
-		 //System.out.println("EndElement"+uri+","+localName+","+qName);
+		//System.out.println("EndElement"+uri+","+localName+","+qName);
 		 String s = tmpString.toString();
 		 switch(CurrentState){
      	case 0:
@@ -174,15 +180,17 @@ throws SAXException
   		   if (!s.trim().equals("")){
 	        	  //System.out.println(s);
   		      //tmpString.append(s);
-  			 long id=0;
-  			 try{
-  				 id=Long.parseLong(s);
-  			 }catch(Exception et){
-  				 System.out.println("Can't parse id "+s);
-  			 }
-  			  au.setId(id); 
-  			
-  			  System.out.println("Tweet ParseSet"+au.getId()+" : "+s);
+  			  if (inUser ==false){ 
+  			    long id=0;
+	  			 try{
+	  				 id=Long.parseLong(s);
+	  			 }catch(Exception et){
+	  				 System.out.println("Can't parse id "+s);
+	  			 }
+	  			  au.setId(id); 
+	  			
+	  			  System.out.println("Tweet ParseSet"+au.getId()+" : "+s);
+  			  }
   		   }
   			
   			break;		
@@ -193,8 +201,26 @@ throws SAXException
 		 
 		 
 		 CurrentState=-1; //We've processed that now
+		 int iName=0;
+		 int iLocalName=0;
+		 if  (qName !=null){
+		    Integer IName=(Integer) ElementsMap.get(qName);
+		    if (IName !=null)
+		       iName=IName.intValue();
+		 }
+		 if (localName!=null){
+		    Integer ILocalName =(Integer) ElementsMap.get(localName);
+		    if (ILocalName!=null)
+		       iLocalName=ILocalName.intValue();
+		 }
+		 if ((iName==3) || (iLocalName==3) ){
+			 inUser=false;
+		 }
 
 	 }
+	 
+	
+	 
 	 
 	 
 }
