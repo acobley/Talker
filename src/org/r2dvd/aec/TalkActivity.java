@@ -548,6 +548,11 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
                 gs= new OGetStatus();
    			    gs.execute(url);
    			    Sleeptime=15000;
+   			    try{
+		          Thread.sleep(Sleeptime);
+		        }catch (Exception ignored){
+		           return;
+		        }
    			    ms= new OGetMentions();
 			    ms.execute(url);
 		     }
