@@ -76,7 +76,7 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
 	long lastTweet=0;
 	long lastMention=0;
 	PowerManager.WakeLock wl =null;
-	
+	Scheduler sc=null;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,9 +94,10 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
         Intent checkIntent = new Intent();
         checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
         startActivityForResult(checkIntent, REQ_TTS_STATUS_CHECK);
-        ols= new OLoginSetup();
-        ols.execute();
-        
+        if (requestToken == null){
+           ols= new OLoginSetup();
+           ols.execute();
+        }
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "ZugZugShebang");
         
@@ -105,7 +106,7 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
 	       webview.setWebViewClient(new WebViewClient(){
 	       	@Override
 	    	public boolean shouldOverrideUrlLoading(WebView view, String url){
-	       		Scheduler sc=null;
+	       		
 	    		//check for our custom callback protocol
 	       //otherwise use default behavior
 	    		if(url.startsWith("oauth")){
@@ -120,9 +121,10 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
 	    			 
 	    			 //gs= new OGetStatus();
 	    			 //gs.execute(url);
-	    			 
-	    			 sc=new Scheduler(url);
-	    			 sc.start();
+	    			 if (sc==null){
+	    			    sc=new Scheduler(url);
+	    			    sc.start();
+	    			 }
                  //Response response=ols.GetResponse(url);
 	    			/*
 	    			if (response !=null){
@@ -139,6 +141,9 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
        
        
     }
+    
+    
+    
     
     public void saySomething(View view) {
     	 
@@ -175,6 +180,7 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
     public void onPause()
     {
         super.onPause();
+        System.out.println("Pausing");
         // if we're losing focus, stop talking
         //Actually, lets not !
         //if( mTts != null)
@@ -196,6 +202,7 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
     @Override
     public void onDestroy()
     {
+    	System.out.println("Being destroyed");
         super.onDestroy();
         mTts.shutdown();
     }

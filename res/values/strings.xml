@@ -3,7 +3,8 @@
 
     <string name="hello">Hello World, TalkActivity!</string>
     <string name="app_name">ZugZugShebang</string>
-    <string name="Speak">Speak !</string>
+    <string name="Speak">Silence</string>
+    <string name="Quit">Quit</string>
     <color name="bkColor">#333333</color>
    <color name="txtColor">#aaaaaa</color>
 </resources>

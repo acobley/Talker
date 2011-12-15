@@ -16,7 +16,7 @@ public class AuthorStore {
 	public AuthorStore(){
 	
 	}
-	
+	 
 	
 	public long getnumPosts(){
 		return numPosts;
