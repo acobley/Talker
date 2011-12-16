@@ -17,6 +17,8 @@ void setTweet(String Tweet){
 
 	Tweet=Tweet.replaceAll("#", ", Hash Tag ");
 	
+	Tweet=Tweet.replaceAll("WTF", ", What the Fuck ");
+	
 	int link=Tweet.indexOf("http://");
     int endlink=Tweet.indexOf(" ", link);
     if ((link>=0) && (endlink>link)){
@@ -24,11 +26,11 @@ void setTweet(String Tweet){
        URL url=null;
        try {
           url = new URL(sLink);
-          System.out.println( url.getHost());
+          //System.out.println( url.getHost());
        }catch(Exception et){
     	   System.out.println("URl can't be decoded");
        }
-       System.out.println(sLink);	
+       //System.out.println(sLink);	
        Tweet=Tweet.replaceAll(sLink, ",Link to  "+url.getHost() );
     }
     	

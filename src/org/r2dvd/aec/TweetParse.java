@@ -192,7 +192,7 @@ throws SAXException
 	  			 try{
 	  				 id=Long.parseLong(s);
 	  			 }catch(Exception et){
-	  				 System.out.println("Can't parse id "+s);
+	  				 //System.out.println("Can't parse id "+s);
 	  			 }
 	  			  au.setId(id); 
 	  			

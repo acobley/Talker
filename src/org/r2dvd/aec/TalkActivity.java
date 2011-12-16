@@ -5,6 +5,7 @@ import javax.xml.parsers.*;
 import java.io.*;
 
 import java.lang.reflect.Method;
+import java.util.Date;
 import java.util.HashMap;
 import android.os.AsyncTask;
 import android.os.PowerManager;
@@ -80,6 +81,7 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        System.out.println("on Create");
         setContentView(R.layout.main);
         textView = (TextView)findViewById(R.id.textview);
         responseView = (TextView)findViewById(R.id.responseview);
@@ -142,7 +144,18 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
        
     }
     
-    
+    public void saySomething(String text) {
+  
+    	//System.out.println("text Length"+text.length());
+    	HashMap<String, String> myHashAlarm = new HashMap();
+    	myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID,"endoftext");
+    	mTts.setOnUtteranceCompletedListener(this);
+    	if (wl!=null){
+    		wl.acquire(); //turn on the screen
+    	}
+    	mTts.speak(text, TextToSpeech.QUEUE_ADD, myHashAlarm);
+    	
+    }
     
     
     public void saySomething(View view) {
@@ -157,7 +170,7 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
     	if (ch !=null)
     	   text= ch.toString();
     	 
-    	System.out.println("text Length"+text.length());
+    	//System.out.println("text Length"+text.length());
     	HashMap<String, String> myHashAlarm = new HashMap();
     	myHashAlarm.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID,"endoftext");
     	mTts.setOnUtteranceCompletedListener(this);
@@ -188,13 +201,13 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
     }
 
     public void onUtteranceCompleted(String uttId) {
-    	System.out.println("utterance completed");
+    	//System.out.println("utterance completed");
     	wl.release();// turn off the screen
-    	Log.v(TAG, "utterance completed");
+    	//Log.v(TAG, "utterance completed");
         if (uttId == "endoftext") {
             //playAnnoyingMusic();
-        	System.out.println("end of speach");
-        	Log.v(TAG, "endof speach");
+        	//System.out.println("end of speach");
+        	//Log.v(TAG, "endof speach");
         } 
     }
     
@@ -528,7 +541,9 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
 	   }
 	   public void start(){
 		     if  (myThread1 == null){
+		    	 saySomething("Starting new thread WTF");
 		          myThread1= new Thread(this);
+		          myThread1.setName("Thread"+new Date());
 		          myThread1.start();
 		     }
 		  }
@@ -543,7 +558,7 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
 		           return;
 		        }
 		        
-		        System.out.println("Running " +i);
+		        System.out.println("Running " +i+" Current Thread"+Thread.currentThread().getName());
                 i++;
                 gs= new OGetStatus();
    			    gs.execute(url);
