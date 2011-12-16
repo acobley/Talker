@@ -18,7 +18,7 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int Speak=0x7f060001;
+        public static final int Mute=0x7f060001;
         public static final int linearLayout1=0x7f060000;
         public static final int mentionview=0x7f060004;
         public static final int responseview=0x7f060003;

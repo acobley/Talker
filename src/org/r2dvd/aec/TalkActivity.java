@@ -78,6 +78,9 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
 	long lastMention=0;
 	PowerManager.WakeLock wl =null;
 	Scheduler sc=null;
+	
+	boolean mute=false;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,7 +90,7 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
         responseView = (TextView)findViewById(R.id.responseview);
         mentionView = (TextView)findViewById(R.id.mentionview);
         webview = (WebView) findViewById(R.id.webView1);
-        speakBtn = (Button)findViewById(R.id.Speak);
+        speakBtn = (Button)findViewById(R.id.Mute);
         webview.setVisibility(View.VISIBLE);
         textView.setVisibility(View.GONE);
     	responseView.setVisibility(View.GONE);
@@ -144,6 +147,17 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
        
     }
     
+    public void doMute(View view){
+    	if (mute==true){
+    		mute=false;
+    		speakBtn.setText("Mute");
+    	}
+    	else {
+    		mute=true;
+    		speakBtn.setText("Unmute");
+    	}
+    }
+    
     public void saySomething(String text) {
   
     	//System.out.println("text Length"+text.length());
@@ -153,7 +167,9 @@ public class TalkActivity extends Activity  implements OnInitListener, TextToSpe
     	if (wl!=null){
     		wl.acquire(); //turn on the screen
     	}
-    	mTts.speak(text, TextToSpeech.QUEUE_ADD, myHashAlarm);
+    	if (mute==false){
+    		mTts.speak(text, TextToSpeech.QUEUE_ADD, myHashAlarm);
+    	}
     	
     }
     
